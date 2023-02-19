@@ -5,6 +5,7 @@ Collection of the core mathematical operators used throughout the code base.
 import math
 from typing import Callable, Iterable
 
+
 # ## Task 0.1
 #
 # Implementation of a prelude of elementary functions.
@@ -132,6 +133,7 @@ def negList(ls: Iterable[float]) -> Iterable[float]:
     "Use `map` and `neg` to negate each element in `ls`"
     return map(neg)(ls)
 
+
 def zipWith(
         fn: Callable[[float, float], float]
 ) -> Callable[[Iterable[float], Iterable[float]], Iterable[float]]:
@@ -171,6 +173,7 @@ def reduce(
          $x_1 \ldots x_n$ and computes the reduction :math:`fn(x_3, fn(x_2,
          fn(x_1, x_0)))`
     """
+
     def _reduce(ls: Iterable[float]) -> float:
         ls = list(ls)
         if ls:
