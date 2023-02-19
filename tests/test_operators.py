@@ -1,3 +1,4 @@
+import random
 from typing import Callable, List, Tuple
 
 import pytest
@@ -26,6 +27,7 @@ from minitorch.operators import (
 )
 
 from .strategies import assert_close, small_floats
+
 
 # ## Task 0.1 Basic hypothesis tests.
 
@@ -107,45 +109,71 @@ def test_sigmoid(a: float) -> None:
     * It crosses 0 at 0.5
     * It is  strictly increasing.
     """
-    # TODO: Implement for Task 0.2.
-    raise NotImplementedError('Need to implement for Task 0.2')
+    s = sigmoid(a)
+    assert 0. <= s <= 1.
+    assert 1 - s == pytest.approx(sigmoid(-a))
+    if a == pytest.approx(0):
+        assert s == pytest.approx(0.5)
+    b = random.uniform(0, 1)
+    t = sigmoid(b)
+    if a == b:
+        assert s == t
+    elif a < b:
+        assert s < t
+    elif a > b:
+        assert s > t
 
 
 @pytest.mark.task0_2
 @given(small_floats, small_floats, small_floats)
 def test_transitive(a: float, b: float, c: float) -> None:
     "Test the transitive property of less-than (a < b and b < c implies a < c)"
-    # TODO: Implement for Task 0.2.
-    raise NotImplementedError('Need to implement for Task 0.2')
+    if lt(a, b) and lt(b, c):
+        assert lt(a, c)
+    elif lt(a, c) and lt(c, b):
+        assert lt(a, b)
+
+    elif lt(b, a) and lt(a, c):
+        assert lt(b, c)
+    elif lt(b, c) and lt(c, a):
+        assert lt(b, a)
+
+    elif lt(c, a) and lt(a, b):
+        assert lt(c, b)
+    elif lt(c, b) and lt(b, a):
+        assert lt(c, a)
 
 
 @pytest.mark.task0_2
-def test_symmetric() -> None:
+@given(small_floats, small_floats)
+def test_symmetric(a: float, b: float) -> None:
     """
     Write a test that ensures that :func:`minitorch.operators.mul` is symmetric, i.e.
     gives the same value regardless of the order of its input.
     """
-    # TODO: Implement for Task 0.2.
-    raise NotImplementedError('Need to implement for Task 0.2')
+    assert mul(a, b) == mul(b, a)
 
 
 @pytest.mark.task0_2
-def test_distribute() -> None:
+@given(small_floats, small_floats, small_floats)
+def test_distribute(x: float, y: float, z: float) -> None:
     r"""
     Write a test that ensures that your operators distribute, i.e.
     :math:`z \times (x + y) = z \times x + z \times y`
     """
-    # TODO: Implement for Task 0.2.
-    raise NotImplementedError('Need to implement for Task 0.2')
+    assert mul(z, add(x, y)) == pytest.approx(add(mul(z, x), mul(z, y)))
 
 
 @pytest.mark.task0_2
-def test_other() -> None:
+@given(small_floats)
+def test_other(x: float) -> None:
     """
     Write a test that ensures some other property holds for your functions.
     """
-    # TODO: Implement for Task 0.2.
-    raise NotImplementedError('Need to implement for Task 0.2')
+    # idempotency
+    for f in [id, relu]:
+        assert f(x) == f(f(x))
+
 
 
 # ## Task 0.3  - Higher-order functions
@@ -215,7 +243,7 @@ def test_one_args(fn: Tuple[str, Callable[[float], float]], t1: float) -> None:
 @given(small_floats, small_floats)
 @pytest.mark.parametrize("fn", two_arg)
 def test_two_args(
-    fn: Tuple[str, Callable[[float, float], float]], t1: float, t2: float
+        fn: Tuple[str, Callable[[float, float], float]], t1: float, t2: float
 ) -> None:
     name, base_fn = fn
     base_fn(t1, t2)
