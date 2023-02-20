@@ -162,9 +162,15 @@ class Scalar:
         assert h is not None
         assert h.last_fn is not None
         assert h.ctx is not None
+        assert h.last_fn is not None and hasattr(h.last_fn, "backward")
 
-        # TODO: Implement for Task 1.3.
-        raise NotImplementedError('Need to implement for Task 1.3')
+        # Implement the chain_rule function in Scalar for functions of arbitrary arguments.
+        # This function should be able to backward process a function by passing it in a context and d
+        # and then collecting the local derivatives.
+        # It should then pair these with the right variables and return them.
+        # This function is also where we filter out constants that were used on the forward pass,
+        # but do not need derivatives.
+        yield from zip(h.inputs, h.last_fn.backward(h.ctx, d_output))
 
     def backward(self, d_output: Optional[float] = None) -> None:
         """
